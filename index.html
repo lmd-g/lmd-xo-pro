@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMD X|O</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ══ THEMES ══ */
+body.theme-cyberpunk{
+  --bg:#0f0f16; --bg2:#1a1a24; --surface:#1f1f2e; --border:#f3e600; --text:#e0e0e0;
+  --muted:#888; --x-color:#ff007f; --x-glow:rgba(255,0,127,.5); --o-color:#00f0ff;
+  --o-glow:rgba(0,240,255,.5); --accent:#f3e600; --accent-glow:rgba(243,230,0,.4);
+  --cell-bg:#151520; --cell-hover:#202030; --win-line:#00ff00; --btn-bg:#1f1f2e;
+}
+body.theme-rog{
+  --bg:#080808; --bg2:#111; --surface:#141414; --border:#ff1a1a; --text:#f0f0f0;
+  --muted:#666; --x-color:#ff1a1a; --x-glow:rgba(255,26,26,.6); --o-color:#cccccc;
+  --o-glow:rgba(204,204,204,.4); --accent:#ff1a1a; --accent-glow:rgba(255,26,26,.4);
+  --cell-bg:#0d0d0d; --cell-hover:#1a1a1a; --win-line:#ffea00; --btn-bg:#1a1a1a;
+}
+body.theme-stone{
+  --bg:#0a1410; --bg2:#112019; --surface:#162b21; --border:#2eb872; --text:#e8f4ec;
+  --muted:#6b8e76; --x-color:#2eb872; --x-glow:rgba(46,184,114,.5); --o-color:#f4d03f;
+  --o-glow:rgba(244,208,63,.5); --accent:#a3e4d7; --accent-glow:rgba(163,228,215,.3);
+  --cell-bg:#0e1c15; --cell-hover:#1a2b21; --win-line:#ffffff; --btn-bg:#162b21;
+}
+body.theme-galaxy{
+  --bg:#0b0914; --bg2:#120e24; --surface:#181333; --border:#8a2be2; --text:#e0d8f0;
+  --muted:#665c84; --x-color:#ff00ff; --x-glow:rgba(255,0,255,.5); --o-color:#00ffff;
+  --o-glow:rgba(0,255,255,.5); --accent:#8a2be2; --accent-glow:rgba(138,43,226,.5);
+  --cell-bg:#0f0c1b; --cell-hover:#1e1840; --win-line:#ffff00; --btn-bg:#181333;
+}
+
+html,body{
+  min-height:100vh;
+  background:var(--bg);
+  font-family:'Tajawal',sans-serif;
+  color:var(--text);
+  transition:background .4s,color .4s;
+}
+
+/* bg pattern */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, var(--accent-glow) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--x-glow) 0%, transparent 40%);
+  opacity:.18;pointer-events:none;z-index:0;
+  transition:all .4s;
+}
+
+.page{
+  position:relative;z-index:1;
+  max-width:480px;margin:0 auto;
+  padding:16px 16px 0;
+  display:flex;flex-direction:column;
+  align-items:center;min-height:100vh;
+}
+
+/* ══ TOP BAR ══ */
+.topbar{
+  width:100%;display:flex;
+  align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.site-brand{
+  font-family:'Orbitron',monospace;
+  font-size:1.3rem;font-weight:900;
+  color:var(--accent);
+  text-shadow:0 0 14px var(--accent-glow);
+  letter-spacing:1px;
+}
+.site-brand span{color:var(--x-color);}
+
+/* Theme Button */
+.theme-btn {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 12px var(--accent-glow);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: var(--text);
+}
+.theme-btn:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ══ HERO ══ */
+.hero{
+  text-align:center;
+  margin-bottom:20px;
+  width:100%;
+}
+.hero-title{
+  font-family:'Orbitron',monospace;
+  font-size:1.6rem;font-weight:900;
+  line-height:1.15;
+  background:linear-gradient(135deg,var(--x-color),var(--accent),var(--o-color));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+.hero-desc{
+  font-size:.82rem;
+  color:var(--muted);
+  line-height:1.5;
+  padding:0 8px;
+}
+.hero-badge{
+  display:inline-block;
+  margin-top:8px;
+  padding:4px 14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:.75rem;
+  color:var(--x-color);
+  font-weight:700;
+  letter-spacing:.5px;
+}
+
+/* ══ SCOREBOARD ══ */
+.scores{
+  width:100%;display:flex;gap:8px;margin-bottom:16px;
+}
+.score-card{
+  flex:1;background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;padding:10px 8px;
+  text-align:center;
+  transition:box-shadow .3s,border-color .3s;
+}
+.score-card.active-x{border-color:var(--x-color);box-shadow:0 0 16px var(--x-glow);}
+.score-card.active-o{border-color:var(--o-color);box-shadow:0 0 16px var(--o-glow);}
+.score-sym{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;margin-bottom:2px;}
+.score-sym.x{color:var(--x-color);text-shadow:0 0 8px var(--x-glow);}
+.score-sym.o{color:var(--o-color);text-shadow:0 0 8px var(--o-glow);}
+.score-sym.draw{color:var(--muted);}
+.score-num{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--text);}
+.score-lbl{font-size:.65rem;color:var(--muted);margin-top:1px;}
+
+/* ══ STATUS ══ */
+.status{
+  width:100%;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:10px 16px;
+  text-align:center;font-size:.9rem;font-weight:700;
+  margin-bottom:14px;min-height:42px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s;
+}
+.status.your-turn{color:var(--x-color);}
+.status.ai-turn{color:var(--o-color);}
+.status.win{color:#ffd700;font-size:1rem;}
+.status.draw{color:var(--muted);}
+
+/* ══ BOARD ══ */
+.board-wrap{
+  width:100%;max-width:340px;
+  margin-bottom:20px;
+  position:relative;
+  padding: 14px;
+  background: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 0 25px var(--accent-glow), inset 0 0 15px rgba(0,0,0,0.5);
+  transition: all 0.3s;
+}
+#board{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  width:100%;
+}
+.cell{
+  aspect-ratio:1;
+  background:var(--cell-bg);
+  border:2px solid var(--border);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;
+  font-size:2.4rem;font-weight:900;
+  cursor:pointer;
+  transition:background .15s,transform .1s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  user-select:none;
+}
+.cell:hover:not(.taken){
+  background:var(--cell-hover);
+  transform:scale(1.04);
+}
+.cell.taken{cursor:default;}
+.cell.x-cell{
+  color:var(--x-color);
+  text-shadow:0 0 14px var(--x-glow);
+  border-color:var(--x-color);
+  box-shadow:inset 0 0 20px rgba(255,68,102,.08);
+}
+.cell.o-cell{
+  color:var(--o-color);
+  text-shadow:0 0 14px var(--o-glow);
+  border-color:var(--o-color);
+  box-shadow:inset 0 0 20px rgba(68,170,255,.08);
+}
+.cell.win-cell{
+  animation:winPulse .6s ease infinite alternate;
+  z-index: 2;
+}
+@keyframes winPulse{
+  from{box-shadow:0 0 10px var(--win-line); border-color: var(--win-line);}
+  to{box-shadow:0 0 30px var(--win-line),inset 0 0 20px rgba(255,255,255,.2); border-color: var(--win-line);}
+}
+
+/* cell pop */
+@keyframes cellPop{0%{transform:scale(0) rotate(-10deg)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.cell.pop{animation:cellPop .25s ease-out;}
+
+/* ══ BUTTONS ══ */
+.btn-row{
+  width:100%;display:flex;gap:10px;margin-bottom:24px;
+}
+.btn{
+  flex:1;padding:12px;border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--btn-bg);color:var(--text);
+  font-family:'Tajawal',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.btn:hover{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow);transform:translateY(-1px);}
+.btn.primary{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#111;
+  text-shadow:none;
+}
+.btn.primary:hover{box-shadow:0 0 20px var(--accent-glow);}
+
+/* ══ SOCIAL LINKS ══ */
+.social-section{
+  width:100%;margin-bottom:12px;
+}
+.social-title{
+  font-size:.7rem;color:var(--muted);
+  letter-spacing:2px;text-transform:uppercase;
+  text-align:center;margin-bottom:10px;font-weight:700;
+}
+.social-cards{
+  display:flex;gap:8px; justify-content: center; flex-wrap: wrap;
+}
+.social-card{
+  flex: 0 1 110px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 4px;
+  text-align:center;
+  text-decoration:none;
+  color:var(--text);
+  transition:all .25s;
+  cursor:pointer;
+  display:block;
+}
+.social-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent);
+  box-shadow:0 6px 15px rgba(0,0,0,.3),0 0 10px var(--accent-glow);
+}
+.social-card:hover .s-logo{filter:drop-shadow(0 0 6px var(--accent));}
+.s-logo{font-size:1.2rem;margin-bottom:2px;transition:filter .25s;}
+.s-user{
+  font-size:.65rem;font-weight:700;
+  color:var(--muted);
+  transition:color .25s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.social-card:hover .s-user{color:var(--accent);}
+.s-name{font-size:.6rem;color:var(--muted);margin-bottom:2px;}
+
+/* ══ FOOTER ══ */
+footer{
+  width:100%;
+  text-align:center;
+  padding:14px 0 20px;
+  border-top:1px solid var(--border);
+  margin-top:auto;
+}
+.footer-copy{
+  font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;
+}
+.footer-copy span{
+  color:var(--accent);
+  font-family:'Orbitron',monospace;font-size:.7rem;
+}
+
+/* ai thinking dots */
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.dots i{font-style:normal;animation:blink 1.1s infinite both;}
+.dots i:nth-child(2){animation-delay:.18s;}
+.dots i:nth-child(3){animation-delay:.36s;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <div class="site-brand">LMD <span>X|O</span></div>
+    <button class="theme-btn" onclick="cycleTheme()" title="تغيير الثيم">🎨</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-title">أصعب لعبة X|O<br>في العالم</div>
+    <div class="hero-desc">مستحيل تفوز — ضد الذكاء الاصطناعي</div>
+    <div class="hero-badge">🤖 Minimax · لا يخطئ أبداً</div>
+  </div>
+
+  <div class="scores">
+    <div class="score-card active-x" id="card-x">
+      <div class="score-sym x">X</div>
+      <div class="score-num" id="sc-x">0</div>
+      <div class="score-lbl">أنت</div>
+    </div>
+    <div class="score-card" id="card-d">
+      <div class="score-sym draw">=</div>
+      <div class="score-num" id="sc-d">0</div>
+      <div class="score-lbl">تعادل</div>
+    </div>
+    <div class="score-card" id="card-o">
+      <div class="score-sym o">O</div>
+      <div class="score-num" id="sc-o">0</div>
+      <div class="score-lbl">الذكاء</div>
+    </div>
+  </div>
+
+  <div class="status your-turn" id="status">دورك — اختر خانة 🎯</div>
+
+  <div class="board-wrap">
+    <div id="board"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn primary" onclick="resetGame()">🔄 جولة جديدة</button>
+    <button class="btn" onclick="resetAll()">🗑 إعادة الكل</button>
+  </div>
+
+  <div class="social-section">
+    <div class="social-title">المطوّر</div>
+    <div class="social-cards">
+
+      <a class="social-card" href="https://t.me/e_mc2g" target="_blank" rel="noopener">
+        <div class="s-logo">✈️</div>
+        <div class="s-name">Telegram</div>
+        <div class="s-user">@e_mc2g</div>
+      </a>
+
+      <a class="social-card" href="https://www.tiktok.com/@e.mc2g" target="_blank" rel="noopener">
+        <div class="s-logo">🎵</div>
+        <div class="s-name">TikTok</div>
+        <div class="s-user">@e.mc2g</div>
+      </a>
+
+      <a class="social-card" href="https://www.instagram.com/ad._.lmd?igsh=MXE2dG12bmE3ZDcw" target="_blank" rel="noopener">
+        <div class="s-logo">📸</div>
+        <div class="s-name">Instagram</div>
+        <div class="s-user">@ad._.lmd</div>
+      </a>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">© <span>LMD GOKU</span> — جميع الحقوق محفوظة</div>
+  </footer>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  Theme Logic
+// ══════════════════════════════════════════
+const themes = ['cyberpunk', 'rog', 'stone', 'galaxy'];
+let currentThemeIndex = 0;
+
+function cycleTheme() {
+  currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+  setTheme(themes[currentThemeIndex]);
+}
+
+function setTheme(t) {
+  document.body.className = 'theme-' + t;
+  localStorage.setItem('lmd_theme', t);
+  currentThemeIndex = themes.indexOf(t) !== -1 ? themes.indexOf(t) : 0;
+}
+
+(function(){
+  const saved = localStorage.getItem('lmd_theme') || 'cyberpunk';
+  setTheme(saved);
+})();
+
+// ══════════════════════════════════════════
+//  Game logic
+// ══════════════════════════════════════════
+const WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let board, gameOver, scores = {x:0,o:0,d:0};
+
+function initBoard(){
+  board = Array(9).fill(null);
+  gameOver = false;
+  renderBoard();
+  setStatus('your-turn','دورك — اختر خانة 🎯');
+  highlightTurn('x');
+}
+
+function renderBoard(){
+  const el = document.getElementById('board');
+  el.innerHTML = '';
+  board.forEach((v,i)=>{
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (v ? ' taken ' + v+'-cell' : '');
+    cell.textContent = v ? v.toUpperCase() : '';
+    if(!v && !gameOver) cell.onclick = () => playerMove(i);
+    el.appendChild(cell);
+  });
+}
+
+function playerMove(i){
+  if(board[i] || gameOver) return;
+  board[i] = 'x';
+  animCell(i);
+  renderBoard();
+  const w = checkWin('x');
+  if(w){ endGame('x', w); return; }
+  if(isDraw()){ endGame(null); return; }
+  // AI turn
+  setStatus('ai-turn','الذكاء يفكر<span class="dots"><i>.</i><i>.</i><i>.</i></span>');
+  highlightTurn('o');
+  setTimeout(aiMove, 320);
+}
+
+function aiMove(){
+  const best = minimax(board, 'o', -Infinity, Infinity);
+  board[best.idx] = 'o';
+  animCell(best.idx);
+  renderBoard();
+  const w = checkWin('o');
+  if(w){ endGame('o', w); return; }
+  if(isDraw()){ endGame(null); return; }
+  setStatus('your-turn','دورك — اختر خانة 🎯');
+  highlightTurn('x');
+}
+
+// Minimax
+function minimax(b, player, alpha, beta){
+  const opp = player==='o'?'x':'o';
+  const wx = checkWin('x', b);
+  const wo = checkWin('o', b);
+  if(wo) return {score: 10};
+  if(wx) return {score: -10};
+  const empty = b.map((v,i)=>v===null?i:-1).filter(i=>i>=0);
+  if(!empty.length) return {score: 0};
+
+  let best = player==='o' ? {score:-Infinity,idx:-1} : {score:Infinity,idx:-1};
+  for(const i of empty){
+    b[i] = player;
+    const res = minimax(b, opp, alpha, beta);
+    b[i] = null;
+    res.idx = i;
+    if(player==='o'){
+      if(res.score > best.score) best = res;
+      alpha = Math.max(alpha, best.score);
+    } else {
+      if(res.score < best.score) best = res;
+      beta = Math.min(beta, best.score);
+    }
+    if(beta <= alpha) break;
+  }
+  return best;
+}
+
+function checkWin(p, b=board){
+  for(const [a,c,d] of WINS){
+    if(b[a]===p && b[c]===p && b[d]===p) return [a,c,d];
+  }
+  return null;
+}
+function isDraw(b=board){ return b.every(v=>v!==null); }
+
+function endGame(winner, combo){
+  gameOver = true;
+  if(winner){
+    scores[winner]++;
+    updateScores();
+    const cells = document.querySelectorAll('.cell');
+    combo.forEach(i => cells[i].classList.add('win-cell'));
+    if(winner==='x'){
+      setStatus('win','🏆 فزت! لا يصدق... مبروك!');
+    } else {
+      setStatus('win','🤖 الذكاء فاز! كما هو متوقع 😈');
+    }
+  } else {
+    scores.d++;
+    updateScores();
+    setStatus('draw','🤝 تعادل — هذا أفضل ما يمكنك فعله!');
+  }
+  highlightTurn(null);
+}
+
+function updateScores(){
+  document.getElementById('sc-x').textContent = scores.x;
+  document.getElementById('sc-o').textContent = scores.o;
+  document.getElementById('sc-d').textContent = scores.d;
+}
+
+function setStatus(cls, html){
+  const s = document.getElementById('status');
+  s.className = 'status ' + cls;
+  s.innerHTML = html;
+}
+
+function highlightTurn(p){
+  document.getElementById('card-x').className = 'score-card' + (p==='x'?' active-x':'');
+  document.getElementById('card-o').className = 'score-card' + (p==='o'?' active-o':'');
+}
+
+function animCell(i){
+  setTimeout(()=>{
+    const cells = document.querySelectorAll('.cell');
+    if(cells[i]) cells[i].classList.add('pop');
+  }, 10);
+}
+
+function resetGame(){ initBoard(); }
+function resetAll(){ scores={x:0,o:0,d:0}; updateScores(); initBoard(); }
+
+// ── Start ──
+initBoard();
+</script>
+</body>
+</html>
